@@ -1,0 +1,4 @@
+✅ Accuracy: 94%
+🔎 Testing URLs:
+google.com -> Legitimate ✅
+fake-secure-google-login.com -> Phishing 🚨
