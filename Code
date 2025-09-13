@@ -1,0 +1,60 @@
+# phishing_url_detection.py
+
+import pandas as pd
+from urllib.parse import urlparse
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
+
+# ---------------------------
+# STEP 1: Load Dataset
+# ---------------------------
+data = pd.read_csv("phishing_site_urls.csv")  
+# Columns: ['URL', 'Label'] | Label: 1 = phishing, 0 = legitimate
+
+# ---------------------------
+# STEP 2: Feature Extraction
+# ---------------------------
+def extract_features(url):
+    features = {}
+    features['url_length'] = len(url)
+    features['has_https'] = 1 if url.startswith("https") else 0
+    features['num_dots'] = url.count('.')
+    features['has_at_symbol'] = 1 if "@" in url else 0
+    features['num_hyphens'] = url.count('-')
+    return list(features.values())
+
+X = data['URL'].apply(extract_features).tolist()
+X = pd.DataFrame(X, columns=['url_length','has_https','num_dots','has_at_symbol','num_hyphens'])
+y = data['Label']
+
+# ---------------------------
+# STEP 3: Train-Test Split
+# ---------------------------
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# ---------------------------
+# STEP 4: Train Model
+# ---------------------------
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+
+# ---------------------------
+# STEP 5: Evaluate
+# ---------------------------
+y_pred = model.predict(X_test)
+print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+print("\n📊 Classification Report:\n", classification_report(y_test, y_pred))
+
+# ---------------------------
+# STEP 6: Test with New URL
+# ---------------------------
+def predict_url(url):
+    features = extract_features(url)
+    prediction = model.predict([features])[0]
+    return "Phishing 🚨" if prediction == 1 else "Legitimate ✅"
+
+# Example URLs
+print("\n🔎 Testing URLs:")
+print("google.com ->", predict_url("https://www.google.com"))
+print("fake-secure-google-login.com ->", predict_url("http://secure-login-google-account.verify-security.com"))
