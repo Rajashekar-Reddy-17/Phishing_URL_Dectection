@@ -1,0 +1,7 @@
+Phishing-URL-Detection/
+│── phishing_url_detection.py      # main Python code
+│── phishing_site_urls.csv         # dataset (or link in README if too large)
+│── requirements.txt               # dependencies
+│── Phishing_URL_Detection_Project.pdf  # project documentation
+│── README.md                      # project details for GitHub
+│── .gitignore                     # ignore unnecessary files
